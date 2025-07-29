@@ -1,17 +1,17 @@
-# This file tells Netlify how to build your site.
-# It forces Netlify to use our script and disables its faulty auto-detection.
+# Netlify build configuration.
+# This file provides the explicit instructions for building the site.
 
 [build]
-  # This is the command that will be run to build your site.
+  # The command to execute to build the site.
+  # 1. `chmod +x build.sh`: Makes the build script executable.
+  # 2. `./build.sh`: Runs the build script.
   command = "chmod +x build.sh && ./build.sh"
-  # This is the directory that will be published after the build.
+
+  # The directory to publish after the build command has run.
   publish = "dist"
 
-[build.environment]
-  # This tells Netlify's build system to ignore Node.js/npm versioning issues
-  # and focus only on running our script.
-  NODE_VERSION = "18"
-
-# This section prevents Netlify from incorrectly guessing your framework.
-[plugins]
+# This section prevents Netlify from incorrectly guessing your framework
+# by loading an empty plugin. This is the fix for the "vite" error.
+# The double brackets `[[...]]` denote a TOML array of tables, which is the correct syntax.
+[[plugins]]
   package = "@netlify/plugin-empty"
