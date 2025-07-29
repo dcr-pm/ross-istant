@@ -2,12 +2,31 @@
 import { GoogleGenAI } from "@google/genai";
 import { GEMINI_API_KEY } from './ttsService';
 
+// The singleton instance of the AI client. It starts as null.
 let ai: GoogleGenAI | null = null;
 
-// Initialize the AI client only if a valid API key is present.
-if (GEMINI_API_KEY && !GEMINI_API_KEY.includes('PLACEHOLDER')) {
-    ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
-}
+/**
+ * Lazily initializes and returns the GoogleGenAI client instance.
+ * This prevents the SDK from being initialized at module load time, which can cause
+ * fatal errors in some browser/CDN environments, leading to a blank screen.
+ * @returns {GoogleGenAI} The initialized AI client.
+ * @throws {Error} If the API key is not configured.
+ */
+const getAiClient = (): GoogleGenAI => {
+  // If the client has already been initialized, return the existing instance.
+  if (ai) {
+    return ai;
+  }
+  
+  // Check for a valid API key before attempting to initialize.
+  if (!GEMINI_API_KEY || GEMINI_API_KEY.includes('PLACEHOLDER')) {
+    throw new Error("Gemini API key is not configured in your deployment environment.");
+  }
+  
+  // Initialize the client, store it in the module-scoped variable, and return it.
+  ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  return ai;
+};
 
 /**
  * Generates a response from the Gemini model and streams it back.
@@ -21,11 +40,10 @@ export const generateStreamingResponse = async (
   isSearchEnabled: boolean,
   onChunk: (chunk: string) => void
 ): Promise<{ fullText: string, citations: any[] }> => {
-  if (!ai) {
-    throw new Error("Gemini API key is not configured in your deployment environment.");
-  }
-
   try {
+    // Get the lazily-initialized client. This will throw an error if the key is missing.
+    const aiClient = getAiClient(); 
+
     const baseSystemInstruction = "You are Ross-istant, a helpful AI assistant. Unless the user specifies a different length, keep your answers concise and to a maximum of 200 words. After providing the answer, always end your response with a brief, natural-sounding follow-up question, like 'Would you like to explore this further?' or 'Is there anything else I can help with?'.";
     const searchSystemInstruction = "When a user asks about current events, news, or prices, prioritize using the search tool to find the most recent, up-to-date information. Always cite your sources accurately.";
 
@@ -38,7 +56,7 @@ export const generateStreamingResponse = async (
       config.systemInstruction = `${baseSystemInstruction} ${searchSystemInstruction}`;
     }
 
-    const response = await ai.models.generateContentStream({
+    const response = await aiClient.models.generateContentStream({
         model: 'gemini-2.5-flash',
         contents: prompt,
         config,
