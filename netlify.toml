@@ -1,0 +1,17 @@
+# This file tells Netlify how to build your site.
+# It forces Netlify to use our script and disables its faulty auto-detection.
+
+[build]
+  # This is the command that will be run to build your site.
+  command = "chmod +x build.sh && ./build.sh"
+  # This is the directory that will be published after the build.
+  publish = "dist"
+
+[build.environment]
+  # This tells Netlify's build system to ignore Node.js/npm versioning issues
+  # and focus only on running our script.
+  NODE_VERSION = "18"
+
+# This section prevents Netlify from incorrectly guessing your framework.
+[plugins]
+  package = "@netlify/plugin-empty"
