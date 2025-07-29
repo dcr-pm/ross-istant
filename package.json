@@ -1,5 +1,6 @@
 {
   "name": "ross-istant-deployment",
   "version": "1.0.0",
+  "description": "A personal AI assistant that provides fast, conversational responses.",
   "private": true
 }
