@@ -1,9 +1,5 @@
 {
-  "name": "ross-istant-ai-assistant",
+  "name": "ross-istant-deployment",
   "version": "1.0.0",
-  "description": "A personal AI assistant that provides fast, conversational responses.",
-  "private": true,
-  "devDependencies": {
-    "@netlify/plugin-empty": "^1.0.2"
-  }
+  "private": true
 }
