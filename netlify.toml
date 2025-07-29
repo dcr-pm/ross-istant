@@ -1,17 +1,10 @@
-# Netlify build configuration.
-# This file provides the explicit instructions for building the site.
+# Netlify build configuration - Simplified and Final Version
 
 [build]
-  # The command to execute to build the site.
+  # This command is the ONLY instruction Netlify should follow to build the site.
   # 1. `chmod +x build.sh`: Makes the build script executable.
-  # 2. `./build.sh`: Runs the build script.
+  # 2. `./build.sh`: Runs the script that injects API keys.
   command = "chmod +x build.sh && ./build.sh"
 
   # The directory to publish after the build command has run.
   publish = "dist"
-
-# This section prevents Netlify from incorrectly guessing your framework
-# by loading an empty plugin. This is the fix for the "vite" error.
-# The double brackets `[[...]]` denote a TOML array of tables, which is the correct syntax.
-[[plugins]]
-  package = "@netlify/plugin-empty"
