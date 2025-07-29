@@ -1,8 +1,0 @@
-{
-  "name": "Ross-istant AI Assistant",
-  "description": "A personal AI assistant that provides fast, conversational responses, with optional, verifiable web search and high-quality audio playback.",
-  "requestFramePermissions": [
-    "microphone"
-  ],
-  "prompt": ""
-}
