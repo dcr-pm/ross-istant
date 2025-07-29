@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# File: build.sh
+
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+# 1. Create the 'dist' directory that Netlify will publish.
+echo "Creating publish directory: dist"
+mkdir -p dist
+
+# 2. Copy all your application files into the 'dist' directory.
+# This copies everything except for the build script itself and git files.
+echo "Copying files to dist directory..."
+rsync -av --exclude 'dist' --exclude '.git*' --exclude 'build.sh' --exclude 'netlify.toml' . dist/
+
+# 3. Navigate into the 'dist' directory to perform the replacements.
+cd dist
+
+# 4. Perform the API key replacement.
+# This finds the placeholder strings in ttsService.ts and replaces them
+# with the actual keys you set in the Netlify UI.
+
+TARGET_FILE="services/ttsService.ts"
+
+# Check if the keys are set in the environment
+if [ -z "$API_KEY" ] || [ -z "$ELEVENLABS_API_KEY" ]; then
+  echo "Error: API_KEY or ELEVENLABS_API_KEY environment variables are not set in Netlify."
+  exit 1
+fi
+
+echo "Injecting API keys into $TARGET_FILE..."
+
+# Use sed to replace the placeholders. The pipe with | is used to avoid issues with special characters in keys.
+sed -i.bak "s|__GEMINI_API_KEY_PLACEHOLDER__|$API_KEY|g" "$TARGET_FILE"
+sed -i.bak "s|__ELEVENLABS_API_KEY_PLACEHOLDER__|$ELEVENLABS_API_KEY|g" "$TARGET_FILE"
+
+echo "Build process complete. API keys injected successfully."
